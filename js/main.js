@@ -1,6 +1,11 @@
 (function (lib, img, cjs, ss) {
 
 var p; // shortcut to reference prototypes
+lib.webFontTxtInst = {}; 
+var loadedTypekitCount = 0;
+var loadedGoogleCount = 0;
+var gFontsUpdateCacheList = [];
+var tFontsUpdateCacheList = [];
 
 // library properties:
 lib.properties = {
@@ -9,9 +14,10 @@ lib.properties = {
 	fps: 24,
 	color: "#000033",
 	opacity: 1.00,
+	webfonts: {},
 	manifest: [
-		{src:"sounds/KawaiKitsune.mp3?1483773231076", id:"KawaiKitsune"},
-		{src:"sounds/Whoosh.mp3?1483773231076", id:"Whoosh"}
+		{src:"sounds/KawaiKitsune.mp3", id:"KawaiKitsune"},
+		{src:"sounds/Whoosh.mp3", id:"Whoosh"}
 	]
 };
 
@@ -20,6 +26,62 @@ lib.properties = {
 lib.ssMetadata = [];
 
 
+
+lib.updateListCache = function (cacheList) {		
+	for(var i = 0; i < cacheList.length; i++) {		
+		if(cacheList[i].cacheCanvas)		
+			cacheList[i].updateCache();		
+	}		
+};		
+
+lib.addElementsToCache = function (textInst, cacheList) {		
+	var cur = textInst;		
+	while(cur != exportRoot) {		
+		if(cacheList.indexOf(cur) != -1)		
+			break;		
+		cur = cur.parent;		
+	}		
+	if(cur != exportRoot) {	//we have found an element in the list		
+		var cur2 = textInst;		
+		var index = cacheList.indexOf(cur);		
+		while(cur2 != cur) { //insert all it's children just before it		
+			cacheList.splice(index, 0, cur2);		
+			cur2 = cur2.parent;		
+			index++;		
+		}		
+	}		
+	else {	//append element and it's parents in the array		
+		cur = textInst;		
+		while(cur != exportRoot) {		
+			cacheList.push(cur);		
+			cur = cur.parent;		
+		}		
+	}		
+};		
+
+lib.gfontAvailable = function(family, totalGoogleCount) {		
+	lib.properties.webfonts[family] = true;		
+	var txtInst = lib.webFontTxtInst && lib.webFontTxtInst[family] || [];		
+	for(var f = 0; f < txtInst.length; ++f)		
+		lib.addElementsToCache(txtInst[f], gFontsUpdateCacheList);		
+
+	loadedGoogleCount++;		
+	if(loadedGoogleCount == totalGoogleCount) {		
+		lib.updateListCache(gFontsUpdateCacheList);		
+	}		
+};		
+
+lib.tfontAvailable = function(family, totalTypekitCount) {		
+	lib.properties.webfonts[family] = true;		
+	var txtInst = lib.webFontTxtInst && lib.webFontTxtInst[family] || [];		
+	for(var f = 0; f < txtInst.length; ++f)		
+		lib.addElementsToCache(txtInst[f], tFontsUpdateCacheList);		
+
+	loadedTypekitCount++;		
+	if(loadedTypekitCount == totalTypekitCount) {		
+		lib.updateListCache(tFontsUpdateCacheList);		
+	}		
+};
 // symbols:
 
 
@@ -253,7 +315,7 @@ p.nominalBounds = new cjs.Rectangle(-352.6,-197.8,841.3,418.2);
 (lib.sun_prom = function(mode,startPosition,loop) {
 	this.initialize(mode,startPosition,loop,{});
 
-	// Layer 2
+	// prominence
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f("#FFFF99").s().p("An3anQg0gKgfgPQgsgTgVggQgQgdgJgNQgPgXgTgEQgXgFgfAaQgmAhgQAFQgfAJgfgaQgagVgUglQgXgugQgTQgagggggDQgQgCgiAJQghAIgRgCQgvgGgYhKIgThBQgMglgPgVQgMgRgXgTIgogfQgcgVgogqIjIjPIgqgtQgWgbgNgXQgTgigMguQgIgfgJg3Ig6l7QgFgfgBgQQgBgaAHgUQAEgOAOgXQAQgZAEgLQALgdgEgmQgCgZgMgqQgkiKgHhVQgKh9AmhdQANggAshMQAohDANgrIAUhYQAMg1ATgeQAQgXAigfQAqglAMgNQAOgRAZgrQAXgpARgTQAWgZAmgYIBDgnQA7gjBPg6ICFhjQCBhbCHhLQAwgbA0gbIDLhsQAmgVAXgJQAigPAfgFQAhgFAqAGQAYAEAyALQB2AbBbAbQBfAaBrAoQA5AVAjAEQA1AFAfgaIAyA0QBlhGBRASQAwAJAeAtQAfAtgWAtQAhAqA7AcQB2A5Bjg7QALBgAGBNQAugJAYgCQAngDAdAJQAjAKAYAbQAYAdgDAiQgBAOgTAsQgQAkAHAWQALAhA6ALQBMANASAMQAhAVAOA6IAXBiQAMAfAsA2QArA0ALAhQAPAvgUBoQgTBkAUAxQAKAaAxA9QAqA0AEAnQADAZgNArQgPAvgBASQgDAmATAuQAKAYAhA4QA8BngNA8QhQAEg2AaQhEAhgBA7QAAATATA2QAPAsgKAaQgOAmhOAWQhTAWgTAgQgLATgBAgIgBA3QgFAvgmBFQhoC/iACtQiQC+iCgjIgiCJQgnALhjgXQhYgVgpAbQgOAKgbAeQgYAcgSAIQgUALgfgBIg3gDQgfgCgmAGQgUADgyALQixAjivAAQi3AAi3glg");
 	this.shape.setTransform(3.7,-5.2);
@@ -2732,7 +2794,7 @@ p.nominalBounds = new cjs.Rectangle(-379,-154.9,756,306);
 (lib._5jupiter = function(mode,startPosition,loop) {
 	this.initialize(mode,startPosition,loop,{});
 
-	// Layer 1 copy 2 (mask)
+	// globe copy (mask)
 	var mask = new cjs.Shape();
 	mask._off = true;
 	mask.graphics.p("Aw4Q6QnBnBABp5QgBp5HBnAQHAnAJ4AAQJ6AAG/HAQHAHAABJ5QgBJ5nAHBQm/G/p6AAQp4AAnAm/g");
@@ -2752,7 +2814,7 @@ p.nominalBounds = new cjs.Rectangle(-379,-154.9,756,306);
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance}]}).to({state:[{t:this.instance_1}]},71).wait(1));
 	this.timeline.addTween(cjs.Tween.get(this.instance).to({_off:true,x:-310.2},71).wait(1));
 
-	// Layer 2 copy
+	// clouds
 	this.instance_2 = new lib.Tween19("synched",0);
 	this.instance_2.parent = this;
 	this.instance_2.setTransform(285.8,15.4);
@@ -2766,7 +2828,7 @@ p.nominalBounds = new cjs.Rectangle(-379,-154.9,756,306);
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_2}]}).to({state:[{t:this.instance_3}]},71).wait(1));
 	this.timeline.addTween(cjs.Tween.get(this.instance_2).to({_off:true,x:-258.2},71).wait(1));
 
-	// Layer 2
+	// clouds 2
 	this.instance_4 = new lib.Tween17("synched",0);
 	this.instance_4.parent = this;
 	this.instance_4.setTransform(282.3,-3.2);
@@ -2775,7 +2837,7 @@ p.nominalBounds = new cjs.Rectangle(-379,-154.9,756,306);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_4).to({x:-307.3},71).wait(1));
 
-	// Layer 1 copy
+	// globe
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f("#FFFFCC").s().p("Aw4Q6QnBnBABp5QgBp5HBnAQHAnAJ4AAQJ6AAG/HAQHAHAABJ5QgBJ5nAHBQm/G/p6AAQp4AAnAm/g");
 	this.shape.setTransform(-2,-1.9);
@@ -2823,13 +2885,13 @@ p.nominalBounds = new cjs.Rectangle(-155,-154.9,306,306);
 (lib._2venus = function(mode,startPosition,loop) {
 	this.initialize(mode,startPosition,loop,{});
 
-	// Layer 1 copy 2 (mask)
+	// globe copy 2 (mask)
 	var mask = new cjs.Shape();
 	mask._off = true;
 	mask.graphics.p("Aw4Q6QnBnBABp5QgBp5HBnAQHAnAJ4AAQJ6AAG/HAQHAHAABJ5QgBJ5nAHBQm/G/p6AAQp4AAnAm/g");
 	mask.setTransform(-2,-1.9);
 
-	// Layer 3
+	// surface
 	this.instance = new lib.Tween5("synched",0);
 	this.instance.parent = this;
 	this.instance.setTransform(309.3,8.9);
@@ -2840,7 +2902,7 @@ p.nominalBounds = new cjs.Rectangle(-155,-154.9,306,306);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance).to({x:-75.7},71).wait(1));
 
-	// Layer 1 (mask)
+	// globe copy (mask)
 	var mask_1 = new cjs.Shape();
 	mask_1._off = true;
 	mask_1.graphics.p("Aw4Q6QnBnBABp5QgBp5HBnAQHAnAJ4AAQJ6AAG/HAQHAHAABJ5QgBJ5nAHBQm/G/p6AAQp4AAnAm/g");
@@ -2857,7 +2919,7 @@ p.nominalBounds = new cjs.Rectangle(-155,-154.9,306,306);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance_1).to({x:-115.6},71).wait(1));
 
-	// Layer 1 copy
+	// globe
 	this.shape = new cjs.Shape();
 	this.shape.graphics.f("#FFCC00").s().p("Aw4Q6QnBnBABp5QgBp5HBnAQHAnAJ4AAQJ6AAG/HAQHAHAABJ5QgBJ5nAHBQm/G/p6AAQp4AAnAm/g");
 	this.shape.setTransform(-2,-1.9);

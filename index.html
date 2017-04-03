@@ -31,6 +31,9 @@ function handleComplete(evt) {
 	for(i=0; i<ssMetadata.length; i++) {
 		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
 	}
+	var preloaderDiv = document.getElementById("_preload_div_");
+	preloaderDiv.style.display = 'none';
+	canvas.style.display = 'block';
 	exportRoot = new lib._150565F_2Dproject();
 	stage = new createjs.Stage(canvas);
 	stage.addChild(exportRoot);
@@ -64,8 +67,8 @@ function handleComplete(evt) {
 			}			
 			canvas.width = w*pRatio*sRatio;			
 			canvas.height = h*pRatio*sRatio;
-			canvas.style.width = w*sRatio+'px';			
-			canvas.style.height = h*sRatio+'px';
+			canvas.style.width = preloaderDiv.style.width = w*sRatio+'px';			
+			canvas.style.height = preloaderDiv.style.height = h*sRatio+'px';
 			stage.scaleX = pRatio*sRatio;			
 			stage.scaleY = pRatio*sRatio;			
 			lastW = iw; lastH = ih; lastS = sRatio;		
@@ -117,7 +120,8 @@ function playSound(id, loop) {
 <body onload="init();" style="margin:0px;">
     <a id="returnKitkat" href="..">&laquo; Home</a>
     <h1>Space Unicorn Explores the Solar System</h1>
-	<canvas id="canvas" width="1280" height="540" style="display: block; background-color:rgba(0, 0, 51, 1.00)"></canvas>
+	<canvas id="canvas" width="1280" height="540" style="display: none; background-color:rgba(0, 0, 51, 1.00)"></canvas>
+    <div id='_preload_div_'  >	<span style='display: inline-block; height: 540px; vertical-align: middle;'></span>	<img src=images/_preloader.gif style='vertical-align: middle; max-height: 100%'/></div>
     <section id="info">
         <p>This interactive animation was a project I did for my animation module in school. I currently have no plans on developing it further. All animation and assets are done from scratch in Adobe Animate CC.</p>
         <p>Music is Kawai Kitsune - Kevin MacLeod (<a href="incompetech.com">incompetech.com</a>)
